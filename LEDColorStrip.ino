@@ -1,5 +1,6 @@
 // NeoPixel Ring simple sketch (c) 2013 Shae Erisson
 // released under the GPLv3 license to match the rest of the AdaFruit NeoPixel library
+// Version 0.1
 
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
