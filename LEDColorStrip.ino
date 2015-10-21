@@ -6,6 +6,7 @@
 #ifdef __AVR__
   #include <avr/power.h>
 #endif
+#include "LEDPattern.h"
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1
@@ -35,6 +36,23 @@ void setup() {
 long cntr = 0;
 enum Direction { GOING_UP, GOING_DOWN };
 Direction dir = GOING_UP;
+
+const uint32_t bluePixels[] = {
+  pixels.Color(80,0,0),
+  pixels.Color(80,0,0),
+  pixels.Color(80,0,0),
+  pixels.Color(80,0,0),
+  pixels.Color(80,0,0),
+  pixels.Color(80,0,0),
+  pixels.Color(80,0,0),
+  pixels.Color(80,0,0),
+  pixels.Color(80,0,0),
+  pixels.Color(80,0,0)
+};
+
+LEDPattern pattern("BLUE", bluePixels, 10 );
+
+
 
 const long colRange = 256;
 
