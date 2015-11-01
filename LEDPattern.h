@@ -24,17 +24,6 @@ class LEDPattern {
     virtual void loop(Adafruit_NeoPixel& pixels) = 0;
 };
 
-//class LEDPatternSingleColor {
-//  private:
-//
-//  public:
-//    char name[MaxNameSize];
-//    uint32_t color;
-//
-//    LEDPatternSingleColor(const char *_name, const uint32_t _color);
-//
-//    void loop(Adafruit_NeoPixel& neoPixels);
-//};
 
 //class LEDPatternColorToggle {
 //  private:

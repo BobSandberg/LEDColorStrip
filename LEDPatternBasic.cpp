@@ -16,7 +16,6 @@ void LEDPatternBasic::describe() {
 void LEDPatternBasic::loop(Adafruit_NeoPixel& neoPixels) {
   if (shift >= (patternLen-1)) shift = 0; 
   else shift++;
-  Serial.print("Shift at "); Serial.println(shift);
   for(int iPix=0;iPix<patternLen;iPix++)
     neoPixels.setPixelColor(iPix, pixels[(iPix + shift) % patternLen]);
   neoPixels.show();

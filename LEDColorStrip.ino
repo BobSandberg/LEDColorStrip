@@ -8,6 +8,8 @@
 #endif
 #include "LEDPattern.h"
 #include "LEDPatternBasic.h"
+#include "LEDPatternSingleColor.h"
+#include "LEDPatternColorToggle.h"
 #include "util.h"
 
 // Which pin on the Arduino is connected to the NeoPixels?
@@ -44,7 +46,12 @@ const uint32_t bluePixels[] = {
 
 LEDPatternBasic patternBasic("BLUE", bluePixels, 10, 0 );
 
+LEDPatternSingleColor patternAllRed  ("All Red"  , red  ); 
+LEDPatternSingleColor patternAllGreen("All Green", green); 
+LEDPatternSingleColor patternAllBlue ("All Blue" , blue ); 
 
+const uint32_t RGBColors[] = { red, green, blue };
+LEDPatternColorToggle patternColorToggle("RGB Toggle", RGBColors, 3, 50); 
 
 void setup() {
   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
@@ -68,12 +75,7 @@ void setup() {
 
 
 
-//LEDPatternSingleColor patternAllRed  ("All Red"  , red  ); 
-//LEDPatternSingleColor patternAllGreen("All Green", green); 
-//LEDPatternSingleColor patternAllBlue ("All Blue" , blue ); 
 
-//const uint32_t RGBColors[] = { red, green, blue };
-//LEDPatternColorToggle patternColorToggle("RGB Toggle", RGBColors, 3); 
 
 //void testPatternMemory() {
 //  uint32_t a[10];
@@ -94,17 +96,20 @@ void setup() {
 //}
 
 void loop() {
+  LEDPattern& pattern = 
+//    patternBasic;
+//    patternAllRed;
+//    patternAllGreen;
+//    patternAllBlue;
+    patternColorToggle;
+//    patternColorToggle.loop(neoPixels);
 
 //  testPatternMemory();
-  patternBasic.describe();
+  pattern.describe();
     
   while(true) {
-    patternBasic.loop(neoPixels);
-//    patternAllRed.loop(neoPixels);
-//    patternAllGreen.loop(neoPixels);
-//    patternAllBlue.loop(neoPixels);
-//    patternColorToggle.toggle();
-//    patternColorToggle.loop(neoPixels);
+    pattern.loop(neoPixels);
+    patternColorToggle.toggle(); // Hmmmm how to do this -- put it in the pattern loop or do some kind of post loop hook
     delay(loopDelay);
   }
  }

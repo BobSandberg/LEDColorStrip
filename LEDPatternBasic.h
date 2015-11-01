@@ -8,7 +8,6 @@ class LEDPatternBasic : public LEDPattern {
     int shift;
 
   public:
-    char name[MaxNameSize];
     int patternLen;
     uint32_t pixels[PatternLength];
 
