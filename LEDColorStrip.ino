@@ -7,6 +7,8 @@
   #include <avr/power.h>
 #endif
 #include "LEDPattern.h"
+#include "LEDPatternBasic.h"
+#include "util.h"
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1
@@ -18,10 +20,31 @@
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
 // example for more information on possible values.
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel neoPixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 int loopDelay = 500;
-int delayval = loopDelay / NUMPIXELS;
+//int delayval = loopDelay / NUMPIXELS;
+
+const uint32_t red   =  neoPixels.Color(255,0,0);
+const uint32_t green =  neoPixels.Color(0,255,0);
+const uint32_t blue  =  neoPixels.Color(0,0,255);
+
+const uint32_t bluePixels[] = {
+  blue,
+  blue,
+  blue,
+  blue,
+  blue,
+  blue,
+  blue,
+  blue,
+  blue,
+  red,
+};
+
+LEDPatternBasic patternBasic("BLUE", bluePixels, 10, 0 );
+
+
 
 void setup() {
   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
@@ -30,104 +53,60 @@ void setup() {
 #endif
   // End of trinket special code
 
-  pixels.begin(); // This initializes the NeoPixel library.
+  neoPixels.begin(); // This initializes the NeoPixel library.
+  neoPixels.show();
+  
+  Serial.begin(9600);
+  delay(2000);
+  Serial.println("Starting NeoPixels");
+  Serial.println("------------------");
+
+  delay(200);
+
 }
 
-long cntr = 0;
-enum Direction { GOING_UP, GOING_DOWN };
-Direction dir = GOING_UP;
-
-const uint32_t bluePixels[] = {
-  pixels.Color(80,0,0),
-  pixels.Color(80,0,0),
-  pixels.Color(80,0,0),
-  pixels.Color(80,0,0),
-  pixels.Color(80,0,0),
-  pixels.Color(80,0,0),
-  pixels.Color(80,0,0),
-  pixels.Color(80,0,0),
-  pixels.Color(80,0,0),
-  pixels.Color(80,0,0)
-};
-
-LEDPattern pattern("BLUE", bluePixels, 10 );
 
 
 
-const long colRange = 256;
+//LEDPatternSingleColor patternAllRed  ("All Red"  , red  ); 
+//LEDPatternSingleColor patternAllGreen("All Green", green); 
+//LEDPatternSingleColor patternAllBlue ("All Blue" , blue ); 
 
-const long colBegining = 0; 
-const long redBegin = colBegining;
-const long redEnd = redBegin + colRange - 1;
-const long greenBegin = redEnd + 1;
-const long greenEnd = greenBegin + colRange - 1;
-const long blueBegin = greenEnd + 1;
-const long blueEnd = blueBegin + colRange - 1;
-const long colEnding = blueEnd;
+//const uint32_t RGBColors[] = { red, green, blue };
+//LEDPatternColorToggle patternColorToggle("RGB Toggle", RGBColors, 3); 
 
-void incrementCntr() {
-  cntr = (cntr < colEnding) ? cntr + 1 : colBegining;
-}
-
-uint8_t mkAColor(long c, long cBegin, long cEnd) {
-  return (uint8_t) ((c < cBegin && c < cEnd) ? 0 : c);
-}
-
-uint32_t mkColor(long c) {
-  uint8_t r = mkAColor(c, redBegin, redEnd);
-  uint8_t g = mkAColor(c, greenBegin, greenEnd);
-  uint8_t b = mkAColor(c, blueBegin, blueEnd);
-  return pixels.Color(r,g,b);
-}
-
-void sendColor(int iPix, uint32_t c) {
-  pixels.setPixelColor(iPix, c);
-}
-
-void colorIncrementer() {
-
-  for(int iPix=0;iPix<NUMPIXELS;iPix++) {
-    sendColor(iPix,mkColor(cntr));
-    pixels.show();
-    delay(delayval);
-    incrementCntr();
-  }
-
- }
-
-uint32_t colors [] = {
-  pixels.Color(80,0,0),
-  pixels.Color(0,80,0),
-  pixels.Color(0,0,100), 
-  pixels.Color(80,80,0),
-  pixels.Color(0,80,80),
-  pixels.Color(80,0,80),
-  pixels.Color(80,80,80) 
-};
-
-int r = 0;
-
-template <typename T,unsigned S>
-inline unsigned arraysize(const T (&v)[S]) { return S; }
-
-int colorsLen = arraysize(colors);
-
-void colorToggler() {
-
-  r = r - 1;
-  for(int iPix=0;iPix<NUMPIXELS;iPix++) {
-    sendColor(iPix,colors[(r + iPix) % colorsLen]);
-  }
-  pixels.show();
-  delay(loopDelay);
-
- }
+//void testPatternMemory() {
+//  uint32_t a[10];
+//  uint32_t b[10];
+//
+//
+//  memcpy( (char *)a, (char *)bluePixels, 10 * sizeof(uint32_t));
+////  memcpy( a, bluePixels, sizeof(uint32_t) * 10);
+//
+////  showPixels("memcpy'd bluePixels array into a: ", a, 10);
+//
+//  for(int k = 0; k<10; k++)
+//    b[k] = bluePixels[k];
+//
+//  showPixels("array copied bluePixels array into b: ", b, 10);
+//
+//  showPixels("patternBasic initilized with bluePixels:", patternBasic.pixels, 10);
+//}
 
 void loop() {
 
-//  colorIncrementer();
-  colorToggler();
-
+//  testPatternMemory();
+  patternBasic.describe();
+    
+  while(true) {
+    patternBasic.loop(neoPixels);
+//    patternAllRed.loop(neoPixels);
+//    patternAllGreen.loop(neoPixels);
+//    patternAllBlue.loop(neoPixels);
+//    patternColorToggle.toggle();
+//    patternColorToggle.loop(neoPixels);
+    delay(loopDelay);
+  }
  }
 
 
