@@ -19,6 +19,7 @@ void LEDPatternColorToggle::loop(Adafruit_NeoPixel& neoPixels) {
     delay(interPixelDelay);
     neoPixels.show();
   }
+  toggle();
 }
 
 void LEDPatternColorToggle::toggle() {

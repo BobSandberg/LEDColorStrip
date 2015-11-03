@@ -1,10 +1,10 @@
 //namespace LEDColorStrip {
 
-#include <arduino.h>
-#include <Adafruit_NeoPixel.h>
-
 #ifndef LED_PATTERN
 #define LED_PATTERN
+
+#include <arduino.h>
+#include <Adafruit_NeoPixel.h>
 
 const int PatternLength = 10;
 
@@ -25,25 +25,6 @@ class LEDPattern {
 };
 
 
-//class LEDPatternColorToggle {
-//  private:
-//  int colorSelection = 0;
-//  uint32_t selectedColor = colors[colorSelection];
-//  
-//  public:
-//    char name[MaxNameSize];
-//    const uint32_t *colors;
-//    const int numColors;
-//
-//    LEDPatternColorToggle(const char *_name, const uint32_t *_colors, int _numColor);
-//
-//    void toggle();
-//
-//    void loop(Adafruit_NeoPixel& neoPixels);
-//};
-
-
-//}
 
 #endif
 

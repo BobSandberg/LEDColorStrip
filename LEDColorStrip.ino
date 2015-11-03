@@ -10,21 +10,24 @@
 #include "LEDPatternBasic.h"
 #include "LEDPatternSingleColor.h"
 #include "LEDPatternColorToggle.h"
+#include "ButtonTrigger.h"
 #include "util.h"
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1
-#define PIN            2
+#define NEOPIXEL_PIN    2
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS      10
 
+#define BUTTON_PIN      3
+
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
 // example for more information on possible values.
-Adafruit_NeoPixel neoPixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel neoPixels = Adafruit_NeoPixel(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
-int loopDelay = 500;
+int loopDelay = 50;
 //int delayval = loopDelay / NUMPIXELS;
 
 const uint32_t red   =  neoPixels.Color(255,0,0);
@@ -53,6 +56,18 @@ LEDPatternSingleColor patternAllBlue ("All Blue" , blue );
 const uint32_t RGBColors[] = { red, green, blue };
 LEDPatternColorToggle patternColorToggle("RGB Toggle", RGBColors, 3, 50); 
 
+LEDPattern* patterns[] = {
+    &patternBasic,
+    &patternAllRed,
+    &patternAllGreen,
+    &patternAllBlue,
+    &patternColorToggle
+};
+
+int nPatterns = 5;
+
+ButtonTrigger button(BUTTON_PIN);
+
 void setup() {
   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
 #if defined (__AVR_ATtiny85__)
@@ -70,46 +85,26 @@ void setup() {
 
   delay(200);
 
+  button.init();
 }
 
-
-
-
-
-
-//void testPatternMemory() {
-//  uint32_t a[10];
-//  uint32_t b[10];
-//
-//
-//  memcpy( (char *)a, (char *)bluePixels, 10 * sizeof(uint32_t));
-////  memcpy( a, bluePixels, sizeof(uint32_t) * 10);
-//
-////  showPixels("memcpy'd bluePixels array into a: ", a, 10);
-//
-//  for(int k = 0; k<10; k++)
-//    b[k] = bluePixels[k];
-//
-//  showPixels("array copied bluePixels array into b: ", b, 10);
-//
-//  showPixels("patternBasic initilized with bluePixels:", patternBasic.pixels, 10);
-//}
+int selectedPattern = 0;
 
 void loop() {
-  LEDPattern& pattern = 
-//    patternBasic;
-//    patternAllRed;
-//    patternAllGreen;
-//    patternAllBlue;
-    patternColorToggle;
-//    patternColorToggle.loop(neoPixels);
+  LEDPattern *pattern = patterns[selectedPattern];
 
-//  testPatternMemory();
-  pattern.describe();
+  pattern->describe(); Serial.println();      
     
   while(true) {
-    pattern.loop(neoPixels);
-    patternColorToggle.toggle(); // Hmmmm how to do this -- put it in the pattern loop or do some kind of post loop hook
+    if (button.check() > 0) {
+      Serial.println("button.check fired +1");
+      selectedPattern++;
+      if (selectedPattern >= nPatterns) selectedPattern = 0;
+      pattern = patterns[selectedPattern];
+      pattern->describe(); Serial.println();      
+    }
+    
+    pattern->loop(neoPixels);
     delay(loopDelay);
   }
  }
